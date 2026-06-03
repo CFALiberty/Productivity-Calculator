@@ -1,0 +1,541 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif}
+:root{
+  --red:#dd0033;--navy:#004f71;--dark-red:#940929;
+  --slate:#5b6770;--warm-gray:#dad7d2;--off-white:#eeedeb;
+  --radius:8px;--radius-lg:12px
+}
+.app{max-width:720px;margin:0 auto;padding:1.5rem 1rem}
+.app-header{background:var(--red);color:#fff;border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+.app-header h1{font-size:18px;font-weight:500;margin-bottom:2px}
+.app-header p{font-size:12px;opacity:.85}
+.step-nav{display:flex;gap:0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--warm-gray);margin-bottom:1.5rem}
+.step-btn{flex:1;padding:.6rem 1rem;background:var(--off-white);border:none;font-size:13px;font-weight:500;color:var(--slate);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.step-btn.active{background:var(--navy);color:#fff}
+.step-btn:not(:last-child){border-right:1px solid var(--warm-gray)}
+.step-num{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:rgba(255,255,255,.25);flex-shrink:0}
+.step-btn:not(.active) .step-num{background:var(--warm-gray);color:var(--slate)}
+.card{background:#fff;border:1px solid var(--warm-gray);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem}
+.dark-mode .card{background:#1e1e1e;border-color:#333}
+.section-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:2px solid var(--off-white)}
+.field-row{display:grid;grid-template-columns:1fr 140px;align-items:center;gap:12px;padding:.45rem 0;border-bottom:1px solid var(--off-white)}
+.field-row:last-child{border-bottom:none}
+.field-label{font-size:13px;color:var(--slate);font-weight:500}
+.field-note{font-size:11px;color:#9aa0a6;margin-top:2px}
+input[type=number],input[type=text]{width:100%;padding:.4rem .6rem;border:1px solid var(--warm-gray);border-radius:6px;font-size:13px;text-align:right;background:#fafafa;color:inherit}
+input[type=number]:focus{outline:2px solid var(--navy);border-color:var(--navy);background:#fff}
+.pp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.5rem}
+.pp-col{background:var(--off-white);border-radius:var(--radius);padding:.75rem}
+.pp-col-label{font-size:11px;font-weight:500;color:var(--navy);margin-bottom:.5rem}
+.pp-field{display:flex;flex-direction:column;gap:3px;margin-bottom:.5rem}
+.pp-field:last-child{margin-bottom:0}
+.pp-field label{font-size:11px;color:var(--slate)}
+.pp-field input{padding:.35rem .5rem;border:1px solid var(--warm-gray);border-radius:5px;font-size:12px;text-align:right;background:#fff}
+.btn-row{display:flex;gap:8px;margin-top:1.25rem;flex-wrap:wrap}
+.btn{padding:.55rem 1.25rem;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:opacity .15s}
+.btn:hover{opacity:.88}
+.btn-primary{background:var(--red);color:#fff}
+.btn-secondary{background:var(--navy);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--warm-gray);color:var(--slate)}
+.btn-sm{padding:.4rem .9rem;font-size:12px}
+.output-hero{background:var(--navy);color:#fff;border-radius:var(--radius-lg);padding:1.5rem;text-align:center;margin-bottom:1rem}
+.output-hero .label{font-size:12px;opacity:.75;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem}
+.output-hero .value{font-size:42px;font-weight:500;color:#fff;line-height:1.1}
+.output-hero .sub{font-size:12px;opacity:.7;margin-top:.25rem}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1rem}
+.metric{background:var(--off-white);border-radius:var(--radius);padding:.85rem 1rem}
+.metric .m-label{font-size:11px;color:var(--slate);margin-bottom:4px}
+.metric .m-value{font-size:18px;font-weight:500;color:var(--navy)}
+.metric.alert .m-value{color:var(--dark-red)}
+.metric.good .m-value{color:#1a7a3e}
+.detail-toggle{background:none;border:1px solid var(--warm-gray);border-radius:var(--radius);padding:.5rem 1rem;font-size:12px;color:var(--slate);cursor:pointer;width:100%;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:6px}
+.detail-toggle:hover{background:var(--off-white)}
+.detail-section{display:none}
+.detail-section.open{display:block}
+.detail-card{background:var(--off-white);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem}
+.detail-card h4{font-size:12px;font-weight:500;color:var(--navy);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-bottom:1px solid var(--warm-gray);font-size:13px}
+.detail-row:last-child{border-bottom:none}
+.detail-row .dr-label{color:var(--slate)}
+.detail-row .dr-value{font-weight:500;color:var(--navy)}
+.detail-row .dr-value.red{color:var(--dark-red)}
+.detail-row .dr-value.green{color:#1a7a3e}
+.wage-rate-display{background:var(--red);color:#fff;border-radius:var(--radius);padding:.85rem 1rem;text-align:center;margin-top:.75rem}
+.wage-rate-display .wr-label{font-size:11px;opacity:.8;margin-bottom:2px}
+.wage-rate-display .wr-value{font-size:22px;font-weight:500}
+.dl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.error-banner{background:#fff3f4;border:1px solid #fcc;border-radius:var(--radius);padding:.75rem 1rem;font-size:13px;color:var(--dark-red);margin-bottom:1rem;display:none}
+.hidden{display:none}
+@media(max-width:500px){
+  .pp-grid{grid-template-columns:1fr}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .field-row{grid-template-columns:1fr 120px}
+}
+</style>
+
+<div class="app">
+  <div class="app-header">
+    <h1>Productivity Target Calculator</h1>
+    <p>CFA Liberty &mdash; Monthly wage management tool</p>
+  </div>
+
+  <div class="step-nav">
+    <button class="step-btn active" onclick="goStep(1)" id="nav1">
+      <span class="step-num">1</span> Wage rate
+    </button>
+    <button class="step-btn" onclick="goStep(2)" id="nav2">
+      <span class="step-num">2</span> Monthly inputs
+    </button>
+    <button class="step-btn" onclick="goStep(3)" id="nav3">
+      <span class="step-num">3</span> Results
+    </button>
+  </div>
+
+  <div id="error-banner" class="error-banner"></div>
+
+  <div id="step1">
+    <div class="card">
+      <div class="section-label">Pay period wage rate calculator</div>
+      <p style="font-size:12px;color:var(--slate);margin-bottom:.75rem">Enter non-salary wage expense and hours for each pay period from the prior month. Break out each payroll run&rsquo;s components as separate line items.</p>
+      <div class="pp-grid">
+        <div class="pp-col">
+          <div class="pp-col-label">Pay period 1 &mdash; wages ($)</div>
+          <div class="pp-field"><label>Line 1</label><input type="number" id="pp1w1" value="5000.17" step="0.01"></div>
+          <div class="pp-field"><label>Line 2</label><input type="number" id="pp1w2" value="107.15" step="0.01"></div>
+          <div class="pp-field"><label>Line 3</label><input type="number" id="pp1w3" value="85325.91" step="0.01"></div>
+          <div class="pp-field"><label>Line 4</label><input type="number" id="pp1w4" value="2875.96" step="0.01"></div>
+          <div class="pp-field"><label>Line 5</label><input type="number" id="pp1w5" value="" step="0.01" placeholder="—"></div>
+          <div class="pp-col-label" style="margin-top:.75rem">Pay period 1 &mdash; hours</div>
+          <div class="pp-field"><label>Line 1</label><input type="number" id="pp1h1" value="276.53" step="0.01"></div>
+          <div class="pp-field"><label>Line 2</label><input type="number" id="pp1h2" value="5.15" step="0.01"></div>
+          <div class="pp-field"><label>Line 3</label><input type="number" id="pp1h3" value="4356.33" step="0.01"></div>
+          <div class="pp-field"><label>Line 4</label><input type="number" id="pp1h4" value="120.72" step="0.01"></div>
+          <div class="pp-field"><label>Line 5</label><input type="number" id="pp1h5" value="" step="0.01" placeholder="—"></div>
+        </div>
+        <div class="pp-col">
+          <div class="pp-col-label">Pay period 2 &mdash; wages ($)</div>
+          <div class="pp-field"><label>Line 1</label><input type="number" id="pp2w1" value="5570.34" step="0.01"></div>
+          <div class="pp-field"><label>Line 2</label><input type="number" id="pp2w2" value="46.58" step="0.01"></div>
+          <div class="pp-field"><label>Line 3</label><input type="number" id="pp2w3" value="87145.05" step="0.01"></div>
+          <div class="pp-field"><label>Line 4</label><input type="number" id="pp2w4" value="2624.23" step="0.01"></div>
+          <div class="pp-field"><label>Line 5</label><input type="number" id="pp2w5" value="835.31" step="0.01"></div>
+          <div class="pp-col-label" style="margin-top:.75rem">Pay period 2 &mdash; hours</div>
+          <div class="pp-field"><label>Line 1</label><input type="number" id="pp2h1" value="310.93" step="0.01"></div>
+          <div class="pp-field"><label>Line 2</label><input type="number" id="pp2h2" value="2.07" step="0.01"></div>
+          <div class="pp-field"><label>Line 3</label><input type="number" id="pp2h3" value="4471.35" step="0.01"></div>
+          <div class="pp-field"><label>Line 4</label><input type="number" id="pp2h4" value="119.47" step="0.01"></div>
+          <div class="pp-field"><label>Line 5</label><input type="number" id="pp2h5" value="33.75" step="0.01"></div>
+        </div>
+      </div>
+      <div id="wage-rate-preview" class="wage-rate-display" style="margin-top:.75rem">
+        <div class="wr-label">Implied average wage rate</div>
+        <div class="wr-value" id="wr-preview">—</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goStep(2)">Next: monthly inputs &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="step2" class="hidden">
+    <div class="card">
+      <div class="section-label">Sales inputs</div>
+      <div class="field-row">
+        <div><div class="field-label">Total projected monthly sales</div><div class="field-note">From forecast</div></div>
+        <input type="number" id="totalSales" value="1010928.84" step="0.01">
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Catering % of total sales</div><div class="field-note">Enter as decimal e.g. 0.10</div></div>
+        <input type="number" id="cateringPct" value="0.10" step="0.01" min="0" max="1">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Fixed non-hourly wage costs</div>
+      <div class="field-row">
+        <div><div class="field-label">Monthly salaries</div><div class="field-note">All salaried employees incl. Operator</div></div>
+        <input type="number" id="salary" value="15311.54" step="0.01">
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">PTO accrual (monthly)</div></div>
+        <input type="number" id="pto" value="2500.00" step="0.01">
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Biz dev bonus rate</div><div class="field-note">% of catering sales</div></div>
+        <input type="number" id="bizRate" value="0.08" step="0.01">
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Operations director bonus</div><div class="field-note">Monthly estimate</div></div>
+        <input type="number" id="opsBonus" value="3000.00" step="0.01">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Hours inputs</div>
+      <div class="field-row">
+        <div><div class="field-label">Total staffing model hours</div><div class="field-note">From staffing model</div></div>
+        <input type="number" id="staffHours" value="10117" step="1">
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Training hours per day</div><div class="field-note">Fixed budget</div></div>
+        <input type="number" id="trainPerDay" value="18" step="1">
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Number of business days</div><div class="field-note">Closed Sundays</div></div>
+        <input type="number" id="bizDays" value="26" step="1">
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Total admin / director hours</div><div class="field-note">Hours not on schedule</div></div>
+        <input type="number" id="adminHours" value="642" step="1">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Target wage percentage</div>
+      <div class="field-row">
+        <div><div class="field-label">Target wage %</div><div class="field-note">Goal on fee calculation report</div></div>
+        <input type="number" id="targetPct" value="0.24" step="0.01">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(1)">&larr; Back</button>
+      <button class="btn btn-primary" onclick="calculate()">Calculate results &rarr;</button>
+    </div>
+  </div>
+
+  <div id="step3" class="hidden">
+    <div class="output-hero">
+      <div class="label">Monthly target productivity</div>
+      <div class="value" id="out-target-prod">—</div>
+      <div class="sub">Sales per hour needed to hit <span id="out-target-pct-sub">24.0%</span> wage target</div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric" id="m-staffonly">
+        <div class="m-label">Staffing-only target productivity</div>
+        <div class="m-value" id="out-staff-prod">—</div>
+      </div>
+      <div class="metric" id="m-curprod">
+        <div class="m-label">Current model productivity</div>
+        <div class="m-value" id="out-cur-prod">—</div>
+      </div>
+      <div class="metric" id="m-curwage">
+        <div class="m-label">Estimated wage % (current model)</div>
+        <div class="m-value" id="out-cur-wage">—</div>
+      </div>
+      <div class="metric" id="m-gap">
+        <div class="m-label">Productivity gap to close</div>
+        <div class="m-value" id="out-prod-gap">—</div>
+      </div>
+    </div>
+
+    <button class="detail-toggle" onclick="toggleDetail()" id="detail-toggle-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Show detailed breakdown
+    </button>
+
+    <div id="detail-section" class="detail-section">
+      <div class="detail-card">
+        <h4>Fixed non-hourly wage costs</h4>
+        <div class="detail-row"><span class="dr-label">Monthly salaries</span><span class="dr-value" id="d-salary">—</span></div>
+        <div class="detail-row"><span class="dr-label">PTO accrual</span><span class="dr-value" id="d-pto">—</span></div>
+        <div class="detail-row"><span class="dr-label">Biz dev bonus</span><span class="dr-value" id="d-biz">—</span></div>
+        <div class="detail-row"><span class="dr-label">Ops director bonus</span><span class="dr-value" id="d-ops">—</span></div>
+        <div class="detail-row" style="border-top:2px solid var(--warm-gray);margin-top:4px;padding-top:6px"><span class="dr-label" style="font-weight:500">Total fixed costs</span><span class="dr-value" id="d-fixed-total">—</span></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Hours breakdown</h4>
+        <div class="detail-row"><span class="dr-label">Staffing model hours</span><span class="dr-value" id="d-staff-hrs">—</span></div>
+        <div class="detail-row"><span class="dr-label">Training hours (total)</span><span class="dr-value" id="d-train-hrs">—</span></div>
+        <div class="detail-row"><span class="dr-label">Admin / director hours</span><span class="dr-value" id="d-admin-hrs">—</span></div>
+        <div class="detail-row" style="border-top:2px solid var(--warm-gray);margin-top:4px;padding-top:6px"><span class="dr-label" style="font-weight:500">Total hours in model</span><span class="dr-value" id="d-total-hrs">—</span></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Wage calculations</h4>
+        <div class="detail-row"><span class="dr-label">Average wage rate</span><span class="dr-value" id="d-avg-wage">—</span></div>
+        <div class="detail-row"><span class="dr-label">Estimated hourly wages</span><span class="dr-value" id="d-hrly-wages">—</span></div>
+        <div class="detail-row"><span class="dr-label">Estimated total wage cost</span><span class="dr-value" id="d-total-wages">—</span></div>
+        <div class="detail-row"><span class="dr-label">Estimated wage % (current model)</span><span class="dr-value" id="d-wage-pct">—</span></div>
+        <div class="detail-row"><span class="dr-label">Target wage %</span><span class="dr-value" id="d-target-pct">—</span></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Gap analysis</h4>
+        <div class="detail-row"><span class="dr-label">Max allowable hourly wages</span><span class="dr-value" id="d-max-hrly">—</span></div>
+        <div class="detail-row"><span class="dr-label">Target total hours</span><span class="dr-value" id="d-target-hrs">—</span></div>
+        <div class="detail-row"><span class="dr-label">Hours over / (under) target</span><span class="dr-value" id="d-hrs-gap">—</span></div>
+        <div class="detail-row"><span class="dr-label">Change in hours per day</span><span class="dr-value" id="d-hrs-day">—</span></div>
+        <div class="detail-row"><span class="dr-label">Productivity gap</span><span class="dr-value" id="d-prod-gap">—</span></div>
+        <div class="detail-row"><span class="dr-label">$ over / (under) wage budget</span><span class="dr-value" id="d-dollar-gap">—</span></div>
+        <div class="detail-row"><span class="dr-label">Target staffing-only hours</span><span class="dr-value" id="d-staff-only-hrs">—</span></div>
+        <div class="detail-row"><span class="dr-label">Staffing-only target productivity</span><span class="dr-value" id="d-staff-only-prod">—</span></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Wage rate inputs (prior month)</h4>
+        <div class="detail-row"><span class="dr-label">Pay period 1 total wages</span><span class="dr-value" id="d-pp1w">—</span></div>
+        <div class="detail-row"><span class="dr-label">Pay period 1 total hours</span><span class="dr-value" id="d-pp1h">—</span></div>
+        <div class="detail-row"><span class="dr-label">Pay period 2 total wages</span><span class="dr-value" id="d-pp2w">—</span></div>
+        <div class="detail-row"><span class="dr-label">Pay period 2 total hours</span><span class="dr-value" id="d-pp2h">—</span></div>
+        <div class="detail-row" style="border-top:2px solid var(--warm-gray);margin-top:4px;padding-top:6px"><span class="dr-label" style="font-weight:500">Implied average wage rate</span><span class="dr-value" id="d-impl-rate">—</span></div>
+      </div>
+    </div>
+
+    <div class="dl-row">
+      <button class="btn btn-secondary btn-sm" onclick="downloadXLS()">&#8595; Download Excel</button>
+      <button class="btn btn-outline btn-sm" onclick="downloadPDF()">&#8595; Download PDF</button>
+      <button class="btn btn-outline btn-sm" onclick="goStep(1)">&larr; Start over</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+var currentStep = 1;
+var results = {};
+
+function goStep(n){
+  [1,2,3].forEach(function(i){
+    document.getElementById('step'+i).classList.toggle('hidden', i!==n);
+    document.getElementById('nav'+i).classList.toggle('active', i===n);
+  });
+  currentStep = n;
+  if(n===1) updateWagePreview();
+}
+
+function v(id){ return parseFloat(document.getElementById(id).value)||0; }
+
+function updateWagePreview(){
+  var pp1w = v('pp1w1')+v('pp1w2')+v('pp1w3')+v('pp1w4')+v('pp1w5');
+  var pp1h = v('pp1h1')+v('pp1h2')+v('pp1h3')+v('pp1h4')+v('pp1h5');
+  var pp2w = v('pp2w1')+v('pp2w2')+v('pp2w3')+v('pp2w4')+v('pp2w5');
+  var pp2h = v('pp2h1')+v('pp2h2')+v('pp2h3')+v('pp2h4')+v('pp2h5');
+  var totalW = pp1w+pp2w; var totalH = pp1h+pp2h;
+  var rate = totalH>0 ? totalW/totalH : 0;
+  document.getElementById('wr-preview').textContent = rate>0 ? '$'+rate.toFixed(4)+' / hr' : '—';
+}
+
+document.querySelectorAll('input[type=number]').forEach(function(el){
+  el.addEventListener('input', function(){
+    if(currentStep===1) updateWagePreview();
+  });
+});
+updateWagePreview();
+
+function c$(n){ return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function cpct(n){ return (n*100).toFixed(2)+'%'; }
+function cn(n,d){ return n.toLocaleString('en-US',{minimumFractionDigits:d||1,maximumFractionDigits:d||1}); }
+
+function calculate(){
+  var pp1w = v('pp1w1')+v('pp1w2')+v('pp1w3')+v('pp1w4')+v('pp1w5');
+  var pp1h = v('pp1h1')+v('pp1h2')+v('pp1h3')+v('pp1h4')+v('pp1h5');
+  var pp2w = v('pp2w1')+v('pp2w2')+v('pp2w3')+v('pp2w4')+v('pp2w5');
+  var pp2h = v('pp2h1')+v('pp2h2')+v('pp2h3')+v('pp2h4')+v('pp2h5');
+  var totalPayW = pp1w+pp2w; var totalPayH = pp1h+pp2h;
+  var avgWage = totalPayH>0 ? totalPayW/totalPayH : 0;
+  var sales = v('totalSales');
+  var cateringPct = v('cateringPct');
+  var salary = v('salary'); var pto = v('pto');
+  var bizRate = v('bizRate'); var opsBonus = v('opsBonus');
+  var staffHrs = v('staffHours');
+  var trainDay = v('trainPerDay'); var bizDays = v('bizDays'); var adminHrs = v('adminHours');
+  var targetPct = v('targetPct');
+  var bizBonus = sales*cateringPct*bizRate;
+  var fixedTotal = salary+pto+bizBonus+opsBonus;
+  var trainTotal = trainDay*bizDays;
+  var totalHrs = staffHrs+trainTotal+adminHrs;
+  var estHrlyWages = totalHrs*avgWage;
+  var estTotalWages = estHrlyWages+fixedTotal;
+  var estWagePct = sales>0 ? estTotalWages/sales : 0;
+  var maxHrly = targetPct*sales-fixedTotal;
+  var targetTotalHrs = avgWage>0 ? maxHrly/avgWage : 0;
+  var targetProd = targetTotalHrs>0 ? sales/targetTotalHrs : 0;
+  var curProd = totalHrs>0 ? sales/totalHrs : 0;
+  var hrsGap = totalHrs-targetTotalHrs;
+  var hrsDayGap = bizDays>0 ? hrsGap/bizDays : 0;
+  var prodGap = targetProd-curProd;
+  var dollarGap = estTotalWages-(targetPct*sales);
+  var staffOnlyTargetHrs = targetTotalHrs-trainTotal-adminHrs;
+  var staffOnlyProd = staffOnlyTargetHrs>0 ? (sales-fixedTotal)/staffOnlyTargetHrs : 0;
+
+  results = {
+    avgWage,sales,cateringPct,salary,pto,bizBonus,opsBonus,fixedTotal,
+    bizRate,trainTotal,staffHrs,adminHrs,totalHrs,estHrlyWages,estTotalWages,
+    estWagePct,maxHrly,targetTotalHrs,targetProd,curProd,hrsGap,hrsDayGap,
+    prodGap,dollarGap,staffOnlyTargetHrs,staffOnlyProd,targetPct,
+    pp1w,pp1h,pp2w,pp2h,totalPayW,totalPayH
+  };
+
+  document.getElementById('out-target-prod').textContent = c$(targetProd);
+  document.getElementById('out-target-pct-sub').textContent = cpct(targetPct);
+  document.getElementById('out-staff-prod').textContent = c$(staffOnlyProd)+'/hr';
+  document.getElementById('out-cur-prod').textContent = c$(curProd)+'/hr';
+  document.getElementById('out-cur-wage').textContent = cpct(estWagePct);
+  document.getElementById('out-prod-gap').textContent = c$(prodGap)+'/hr';
+
+  var mCur = document.getElementById('m-curwage');
+  mCur.classList.toggle('alert', estWagePct>targetPct);
+  mCur.classList.toggle('good', estWagePct<=targetPct);
+  document.getElementById('m-gap').classList.toggle('alert', prodGap>0);
+  document.getElementById('m-gap').classList.toggle('good', prodGap<=0);
+
+  function set(id,val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+  set('d-salary',c$(salary)); set('d-pto',c$(pto)); set('d-biz',c$(bizBonus));
+  set('d-ops',c$(opsBonus)); set('d-fixed-total',c$(fixedTotal));
+  set('d-staff-hrs',cn(staffHrs,0)); set('d-train-hrs',cn(trainTotal,0));
+  set('d-admin-hrs',cn(adminHrs,0)); set('d-total-hrs',cn(totalHrs,0));
+  set('d-avg-wage','$'+avgWage.toFixed(4)+'/hr');
+  set('d-hrly-wages',c$(estHrlyWages)); set('d-total-wages',c$(estTotalWages));
+  set('d-wage-pct',cpct(estWagePct)); set('d-target-pct',cpct(targetPct));
+  set('d-max-hrly',c$(maxHrly)); set('d-target-hrs',cn(targetTotalHrs,1));
+  set('d-hrs-gap',(hrsGap>=0?'+':'')+cn(hrsGap,1));
+  set('d-hrs-day',(hrsDayGap>=0?'+':'')+hrsDayGap.toFixed(2)+' hrs/day');
+  set('d-prod-gap',c$(prodGap)+'/hr'); set('d-dollar-gap',c$(dollarGap));
+  set('d-staff-only-hrs',cn(staffOnlyTargetHrs,1));
+  set('d-staff-only-prod',c$(staffOnlyProd)+'/hr');
+  set('d-pp1w',c$(pp1w)); set('d-pp1h',cn(pp1h,2));
+  set('d-pp2w',c$(pp2w)); set('d-pp2h',cn(pp2h,2));
+  set('d-impl-rate','$'+avgWage.toFixed(4)+'/hr');
+
+  var gapEls = ['d-hrs-gap','d-dollar-gap','d-prod-gap'];
+  gapEls.forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    var isOver = id==='d-hrs-gap' ? hrsGap>0 : (id==='d-dollar-gap' ? dollarGap>0 : prodGap>0);
+    el.classList.toggle('red', isOver);
+    el.classList.toggle('green', !isOver);
+  });
+
+  goStep(3);
+}
+
+function toggleDetail(){
+  var sec=document.getElementById('detail-section');
+  var btn=document.getElementById('detail-toggle-btn');
+  var open=sec.classList.toggle('open');
+  btn.innerHTML=(open
+    ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 9l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Hide detailed breakdown'
+    : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Show detailed breakdown');
+}
+
+function downloadXLS(){
+  var r=results;
+  var wb=XLSX.utils.book_new();
+  var rows=[
+    ['CFA Liberty — Productivity Target Calculator','',''],
+    ['','',''],
+    ['WAGE RATE INPUTS (Prior Month)','',''],
+    ['Pay Period 1 — Total Wages','',r.pp1w],
+    ['Pay Period 1 — Total Hours','',r.pp1h],
+    ['Pay Period 2 — Total Wages','',r.pp2w],
+    ['Pay Period 2 — Total Hours','',r.pp2h],
+    ['Total Gross Hourly Wages','',r.totalPayW],
+    ['Total Hours Worked','',r.totalPayH],
+    ['Implied Average Wage Rate','','$'+r.avgWage.toFixed(4)],
+    ['','',''],
+    ['SALES INPUTS','',''],
+    ['Total Projected Monthly Sales','',r.sales],
+    ['Catering % of Total Sales','',cpct(r.cateringPct)],
+    ['','',''],
+    ['FIXED NON-HOURLY WAGE COSTS','',''],
+    ['Monthly Salaries','',r.salary],
+    ['PTO Accrual','',r.pto],
+    ['Biz Dev Bonus','',r.bizBonus],
+    ['Operations Director Bonus','',r.opsBonus],
+    ['Total Fixed Non-Hourly Costs','',r.fixedTotal],
+    ['','',''],
+    ['HOURS INPUTS','',''],
+    ['Staffing Model Hours','',r.staffHrs],
+    ['Training Hours (total)','',r.trainTotal],
+    ['Admin / Director Hours','',r.adminHrs],
+    ['Total Hours in Model','',r.totalHrs],
+    ['','',''],
+    ['TARGET & CALCULATED OUTPUTS','',''],
+    ['Target Wage %','',cpct(r.targetPct)],
+    ['Average Wage Rate','','$'+r.avgWage.toFixed(4)],
+    ['Max Allowable Hourly Wages','',r.maxHrly],
+    ['Target Total Hours','',r.targetTotalHrs.toFixed(1)],
+    ['Monthly Target Productivity','','$'+r.targetProd.toFixed(2)+' / hr'],
+    ['','',''],
+    ['CURRENT MODEL ANALYSIS','',''],
+    ['Estimated Hourly Wages','',r.estHrlyWages],
+    ['Estimated Total Wage Cost','',r.estTotalWages],
+    ['Estimated Wage % (Current Model)','',cpct(r.estWagePct)],
+    ['Current Model Productivity','','$'+r.curProd.toFixed(2)+' / hr'],
+    ['','',''],
+    ['GAP ANALYSIS','',''],
+    ['Hours Over / (Under) Target','',r.hrsGap.toFixed(1)],
+    ['Change in Hours per Day','',r.hrsDayGap.toFixed(2)],
+    ['Productivity Gap','','$'+r.prodGap.toFixed(2)+' / hr'],
+    ['$ Over / (Under) Wage Budget','',r.dollarGap.toFixed(2)],
+    ['Target Staffing-Only Hours','',r.staffOnlyTargetHrs.toFixed(1)],
+    ['Staffing-Only Target Productivity','','$'+r.staffOnlyProd.toFixed(2)+' / hr'],
+  ];
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:42},{wch:5},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,ws,'Productivity Calculator');
+  XLSX.writeFile(wb,'CFA_Productivity_Target.xlsx');
+}
+
+function downloadPDF(){
+  var r=results;
+  var now=new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><style>';
+  html+='body{font-family:Arial,sans-serif;color:#222;margin:40px;font-size:13px}';
+  html+='.logo{color:#dd0033;font-size:20px;font-weight:700;margin-bottom:4px}';
+  html+='.subtitle{color:#5b6770;font-size:11px;margin-bottom:28px}';
+  html+='.hero{background:#004f71;color:#fff;padding:20px 24px;border-radius:8px;text-align:center;margin-bottom:24px}';
+  html+='.hero .label{font-size:11px;opacity:.75;text-transform:uppercase;letter-spacing:.06em}';
+  html+='.hero .value{font-size:36px;font-weight:700;margin:4px 0}';
+  html+='.hero .sub{font-size:11px;opacity:.7}';
+  html+='h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#004f71;border-bottom:2px solid #eeedeb;padding-bottom:6px;margin:20px 0 10px}';
+  html+='.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eeedeb;font-size:12px}';
+  html+='.row .lbl{color:#5b6770}.row .val{font-weight:600}';
+  html+='.row.total .lbl{font-weight:600;color:#222}.row.total .val{color:#004f71}';
+  html+='.row.alert .val{color:#940929}.row.good .val{color:#1a7a3e}';
+  html+='.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}';
+  html+='</style></head><body>';
+  html+='<div class="logo">CFA Liberty</div><div class="subtitle">Productivity Target Calculator &mdash; '+now+'</div>';
+  html+='<div class="hero"><div class="label">Monthly target productivity</div><div class="value">$'+r.targetProd.toFixed(2)+' / hr</div>';
+  html+='<div class="sub">Target wage: '+cpct(r.targetPct)+'&nbsp;&nbsp;|&nbsp;&nbsp;Avg wage rate: $'+r.avgWage.toFixed(4)+'/hr</div></div>';
+  function section(title){ html+='<h3>'+title+'</h3>'; }
+  function row(lbl,val,cls){ html+='<div class="row'+(cls?' '+cls:'')+'"><span class="lbl">'+lbl+'</span><span class="val">'+val+'</span></div>'; }
+  section('Wage rate (prior month)');
+  row('Pay period 1 wages',c$(r.pp1w)); row('Pay period 1 hours',cn(r.pp1h,2));
+  row('Pay period 2 wages',c$(r.pp2w)); row('Pay period 2 hours',cn(r.pp2h,2));
+  row('Total gross hourly wages',c$(r.totalPayW)); row('Total hours worked',cn(r.totalPayH,2));
+  row('Implied average wage rate','$'+r.avgWage.toFixed(4)+'/hr','total');
+  section('Sales inputs');
+  row('Total projected monthly sales',c$(r.sales)); row('Catering %',cpct(r.cateringPct));
+  section('Fixed non-hourly wage costs');
+  row('Monthly salaries',c$(r.salary)); row('PTO accrual',c$(r.pto));
+  row('Biz dev bonus',c$(r.bizBonus)); row('Operations director bonus',c$(r.opsBonus));
+  row('Total fixed non-hourly costs',c$(r.fixedTotal),'total');
+  section('Hours inputs');
+  row('Staffing model hours',cn(r.staffHrs,0)); row('Training hours (total)',cn(r.trainTotal,0));
+  row('Admin / director hours',cn(r.adminHrs,0)); row('Total hours in model',cn(r.totalHrs,0),'total');
+  section('Calculated outputs');
+  row('Max allowable hourly wages',c$(r.maxHrly)); row('Target total hours',cn(r.targetTotalHrs,1));
+  row('Estimated hourly wages (current model)',c$(r.estHrlyWages));
+  row('Estimated total wage cost (current model)',c$(r.estTotalWages));
+  row('Estimated wage % (current model)',cpct(r.estWagePct), r.estWagePct>r.targetPct?'alert':'good');
+  row('Current model productivity','$'+r.curProd.toFixed(2)+'/hr');
+  section('Gap analysis');
+  row('Hours over / (under) target',(r.hrsGap>=0?'+':'')+r.hrsGap.toFixed(1), r.hrsGap>0?'alert':'good');
+  row('Change in hours per day',(r.hrsDayGap>=0?'+':'')+r.hrsDayGap.toFixed(2)+' hrs/day');
+  row('Productivity gap','$'+r.prodGap.toFixed(2)+'/hr', r.prodGap>0?'alert':'good');
+  row('$ over / (under) wage budget',c$(r.dollarGap), r.dollarGap>0?'alert':'good');
+  row('Target staffing-only hours',cn(r.staffOnlyTargetHrs,1));
+  row('Staffing-only target productivity','$'+r.staffOnlyProd.toFixed(2)+'/hr','total');
+  html+='</body></html>';
+  var win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){ win.print(); },600);
+}
+</script>
